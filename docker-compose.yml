@@ -1,0 +1,41 @@
+version: '3.9'
+services:
+  web:
+    container_name: web
+    image: php:8.1-apache
+    volumes:
+      - ./:/var/www
+      - ./docker/web/apache/sites-available:/etc/apache2/sites-available
+    environment:
+      - VIRTUAL_HOST=products-api.local
+  #    env_file:
+  #        - .env
+    user: 1000:1000
+    working_dir: /var/www
+  db:
+    container_name: db
+    image: mariadb:10.5
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-1234}
+    volumes:
+      - /var/lib/mysql
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+  phpmyadmin:
+    container_name: phpmyadmin
+    image: phpmyadmin
+
+    environment:
+      - PMA_ARBITRARY=1
+      - PMA_HOSTS=${DB_HOST:-db}
+      - PMA_USER=${DB_USERNAME:-root}
+      - PMA_PASSWORD=${DB_PASSWORD:-1234}
+      - VIRTUAL_HOST=phpmyadmin.products-api.local
+  nginx-proxy:
+    container_name: nproxy
+    image: nginxproxy/nginx-proxy
+    ports:
+      - "80:80"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro

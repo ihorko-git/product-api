@@ -1,4 +1,5 @@
 1. be sure to configure products-api.local pointing to your localhost
+   probably remove user: "1000:1000" from docker-compose.yml if u r using Mac
 2. there is .env.default, that could be used
 3. run migrations and seeders
 4. pick one email from users table, password test123 is default for all users
